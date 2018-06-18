@@ -14,11 +14,29 @@ def test():
     print(x)
     py.show(py.plot(x, data))
 
-def chargerate(Q, C, R, Vb, Vt):
+def Charge(C,R,V,t):
+    Q = C*V*(1-np.exp(-t/R*C))
+    return Q
+
+def dbydt(Q, C, R, V, t):
+    h = 0.00001
+    dQ = np.abs((Q(C,R,V,t - h) - Q(C,R,V,t + h))/2*h)
+    return dQ
+
+def chargerate(C, R, V, Vt):
     x = np.arange(0,10, 0.1)
     data = []
-    for i in range(len(x)):
-        y = C*V*(1-np.exp(-x[i]/R*C))
-        data.append(y)
+    derivatives = []
+    for i in x:
+        Q = Charge(C,R,V,i)
+        dQ = dbydt(Charge, C,R,V,i)
+        Vc = Q/C
+        
+        data.append(Vc)
+        derivatives.append(dQ)
 
-    py.show(py.plot(x,data))
+    py.plot(x,data, 'r', x, derivatives, "g")
+    py.show()
+
+
+    
